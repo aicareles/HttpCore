@@ -13,11 +13,11 @@
                         Toast.makeText(MainActivity.this,entity,Toast.LENGTH_LONG).show();<br>
                     }<br>
 
-                    @Override<br>
-                    public void onFailure(int tag, String msg, int code) {<br>
-                        Toast.makeText(MainActivity.this,"请求失败",Toast.LENGTH_LONG).show();<br>
-                    }<br>
-                });<br>
+                    @Override
+                    public void onFailure(int tag, String msg, int code) {
+                        Toast.makeText(MainActivity.this,"请求失败",Toast.LENGTH_LONG).show();
+                    }
+                });
 
 2、POST请求<br>
                 String url = "http://media.e-toys.cn/api/user/loginByMobile";<br>
@@ -30,11 +30,11 @@
                         Toast.makeText(MainActivity.this,"请求成功",Toast.LENGTH_LONG).show();<br>
                     }<br>
 
-                    @Override<br>
-                    public void onFailure(int tag, String msg, int code) {<br>
-                        Toast.makeText(MainActivity.this,"请求失败",Toast.LENGTH_LONG).show();<br>
-                    }<br>
-                });<br>
+                    @Override
+                    public void onFailure(int tag, String msg, int code) {
+                        Toast.makeText(MainActivity.this,"请求失败",Toast.LENGTH_LONG).show();
+                    }
+                });
 
 
 
