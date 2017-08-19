@@ -1,9 +1,10 @@
-package com.example.admin.myhttplib;
+package com.example.admin.myhttplib.response;
 
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.example.admin.myhttplib.BuildConfig;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * Created by LiuLei on 2017/8/19.
  */
 
-public class LLListResponse<T> extends LLResponse{
+public class LLListResponse<T> extends LLResponse {
 
     private List<T> mList;
 

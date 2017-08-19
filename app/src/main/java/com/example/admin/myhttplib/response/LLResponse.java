@@ -1,15 +1,17 @@
-package com.example.admin.myhttplib;
+package com.example.admin.myhttplib.response;
 
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.example.admin.myhttplib.BuildConfig;
+import com.example.admin.myhttplib.ErrorStatus;
 
 /**
  * Created by LiuLei on 2017/8/19.
  */
 
-public class LLResponse<T> implements ErrorStatus{
+public class LLResponse<T> implements ErrorStatus {
 
     public static final String DATA = "data";//服务器的静态常量  真实数据
     public static final String STATUS = "status";//服务器的静态常量  状态码

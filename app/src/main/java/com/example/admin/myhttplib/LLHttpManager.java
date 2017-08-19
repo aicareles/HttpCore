@@ -2,10 +2,14 @@ package com.example.admin.myhttplib;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.example.admin.myhttplib.callback.LLBeanNetCallback;
+import com.example.admin.myhttplib.callback.LLListNetCallback;
+import com.example.admin.myhttplib.callback.LLNetCallback;
+import com.example.admin.myhttplib.response.LLListResponse;
+import com.example.admin.myhttplib.response.LLResponse;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
 
 /**
