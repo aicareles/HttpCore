@@ -15,7 +15,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 /**
- * Created by admin on 2017/3/23.
+ *
+ * Created by liulei on 2017/3/23.
  */
 
 public class LLNetRunnable implements Runnable {

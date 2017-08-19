@@ -1,7 +1,8 @@
 package com.example.admin.myhttplib;
 
 /**
- * Created by admin on 2017/3/23.
+ *
+ * Created by liulei on 2017/3/23.
  */
 
 public interface LLNetCallback {
