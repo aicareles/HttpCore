@@ -1,4 +1,4 @@
-package com.example.admin.myhttplib;
+package com.example.admin.myhttplib.model;
 
 /**
  * Created by LiuLei on 2017/8/19.

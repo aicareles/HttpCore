@@ -27,6 +27,12 @@ class LLHttpManager<T> {
         return ins;
     }
 
+    /**
+     * 执行get请求
+     * @param tag
+     * @param url
+     * @param callback
+     */
      static void doNetGet(int tag,String url,final LLNetCallback callback){
         LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.GET, tag, url,null, new LLNetCallback() {
             @Override
@@ -51,6 +57,13 @@ class LLHttpManager<T> {
         }));
     }
 
+    /**
+     * 执行结果返回实体对象
+     * @param tag
+     * @param url
+     * @param params
+     * @param callback
+     */
     void doBeanNetPost(int tag, String url, Map<String,String> params, final LLBeanNetCallback<T> callback){
         LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.POST, tag, url,params, new LLNetCallback() {
             @Override
@@ -90,6 +103,13 @@ class LLHttpManager<T> {
         }));
     }
 
+    /**
+     * 执行结果返回列表对象
+     * @param tag
+     * @param url
+     * @param params
+     * @param callback
+     */
     void doListNetPost(int tag, String url, Map<String,String> params, final LLListNetCallback<T> callback){
         LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.POST, tag, url,params, new LLNetCallback() {
             @Override
@@ -129,6 +149,13 @@ class LLHttpManager<T> {
     }
 
 
+    /**
+     * 执行结果返回sting对象
+     * @param tag
+     * @param url
+     * @param params
+     * @param callback
+     */
     void doSimpleNetPost(int tag, String url, Map<String,String> params, final LLNetCallback callback){
         LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.POST, tag, url,params, new LLNetCallback() {
             @Override

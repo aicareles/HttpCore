@@ -18,10 +18,22 @@
         android:text="Get请求"/>
 
     <Button
-        android:id="@+id/post"
+        android:id="@+id/postSimple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Post请求"/>
+        android:text="简单的Post请求"/>
+
+    <Button
+        android:id="@+id/postBean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="返回实体对象的Post请求"/>
+
+    <Button
+        android:id="@+id/postList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="返回列表对象的Post请求"/>
 
     <Button
         android:id="@+id/cancel"
