@@ -6,15 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.admin.myhttplib.callback.LLBeanNetCallback;
-import com.example.admin.myhttplib.callback.LLListNetCallback;
-import com.example.admin.myhttplib.callback.LLNetCallback;
+import com.example.admin.myhttplib.callback.BeanNetCallback;
+import com.example.admin.myhttplib.callback.ListNetCallback;
+import com.example.admin.myhttplib.callback.SimpleNetCallback;
 import com.example.admin.myhttplib.model.Device;
 import com.example.admin.myhttplib.model.User;
-import com.example.admin.myhttplib.response.LLListResponse;
-import com.example.admin.myhttplib.response.LLResponse;
+import com.example.admin.myhttplib.response.ListResponse;
+import com.example.admin.myhttplib.response.Response;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 currentTag = 1;
-                LLHttpManager.doNetGet(currentTag, "https://www.baidu.com", new LLNetCallback() {
+                HttpManager.doNetGet(currentTag, "https://www.baidu.com", new SimpleNetCallback() {
                     @Override
                     public void onSuccess(int tag, String entity) {
                         Toast.makeText(MainActivity.this,entity,Toast.LENGTH_LONG).show();
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 Map<String,String> params = new HashMap<String, String>();
                 params.put("mobile", "18682176281");
                 params.put("password","e10adc3949ba59abbe56e057f20f883e");
-                LLHttpManager.getInstance().doSimpleNetPost(currentTag, url, params, new LLNetCallback() {
+                HttpManager.getInstance().doSimpleNetPost(currentTag, url, params, new SimpleNetCallback() {
 
                     @Override
                     public void onFailure(int tag, String msg, int code) {
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 Map<String,String> params = new HashMap<String, String>();
                 params.put("mobile", "18682176281");
                 params.put("password","e10adc3949ba59abbe56e057f20f883e");
-                LLHttpManager.getInstance().doBeanNetPost(currentTag, url, params, new LLBeanNetCallback<User>() {
+                HttpManager.getInstance().doBeanNetPost(currentTag, url, params, new BeanNetCallback<User>() {
 
                     @Override
                     public void onFailure(int tag, String msg, int code) {
@@ -87,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(int tag, LLResponse<User> data) {
-                        Log.e(TAG, "onSuccess: "+data.getVo().user_name);
+                    public void onSuccess(int tag, Response<User> data) {
+                        Log.e(TAG, "onSuccess: "+data.getVo().getUser_name());
+                        token = data.getVo().getUser_token();
                         Toast.makeText(MainActivity.this,"请求成功",Toast.LENGTH_LONG).show();
                     }
                 });
@@ -101,8 +101,13 @@ public class MainActivity extends AppCompatActivity {
                 currentTag = 4;
                 String url = "http://media.e-toys.cn/api/user/devices";
                 HashMap<String,String> params = new HashMap<>();
-                params.put("token",token);
-                LLHttpManager.getInstance().doListNetPost(currentTag, url, params, new LLListNetCallback<Device>() {
+                if(token!=null){
+                    params.put("token",token);
+                }else {
+                    Toast.makeText(MainActivity.this,"token为空，请先点击登录按钮并获取token",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                HttpManager.getInstance().doListNetPost(currentTag, url, params, new ListNetCallback<Device>() {
 
                     @Override
                     public void onFailure(int tag, String msg, int code) {
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(int tag, LLListResponse<Device> data) {
+                    public void onSuccess(int tag, ListResponse<Device> data) {
                         Log.e(TAG, "onSuccess: "+ data.getList().size());
                         Toast.makeText(MainActivity.this,"请求成功",Toast.LENGTH_LONG).show();
                     }
@@ -123,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(currentTag > 0){
-                    LLHttpManager.cancelHttp(currentTag);
+                    HttpManager.cancelHttp(currentTag);
                 }
             }
         });

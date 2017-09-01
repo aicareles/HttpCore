@@ -4,11 +4,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.os.ParcelUuid;
 
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -20,9 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by liulei on 2017/3/23.
  */
 
-public class LLExecutor {
+public class Executor {
 
-    private LLExecutor(){
+    private Executor(){
         throw new RuntimeException("no access permission");
     }
 
@@ -47,7 +44,7 @@ public class LLExecutor {
 
     private static final BlockingQueue<Runnable>sPoolWorkQueue = new LinkedBlockingQueue<>(128);
 
-    public static final Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE,
+    public static final java.util.concurrent.Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE,
             MAXIMUM_POOL_SIZE,
             KEEP_ALIVE,
             TimeUnit.SECONDS,
@@ -67,7 +64,7 @@ public class LLExecutor {
     }
 
     public static Handler getNetHandler(){
-        synchronized (LLExecutor.class){
+        synchronized (Executor.class){
             if(netHandler == null){
                 HandlerThread handlerThread = new HandlerThread("handler thread");
                 handlerThread.start();

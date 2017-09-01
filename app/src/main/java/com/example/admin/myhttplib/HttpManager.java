@@ -2,11 +2,11 @@ package com.example.admin.myhttplib;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.example.admin.myhttplib.callback.LLBeanNetCallback;
-import com.example.admin.myhttplib.callback.LLListNetCallback;
-import com.example.admin.myhttplib.callback.LLNetCallback;
-import com.example.admin.myhttplib.response.LLListResponse;
-import com.example.admin.myhttplib.response.LLResponse;
+import com.example.admin.myhttplib.callback.BeanNetCallback;
+import com.example.admin.myhttplib.callback.ListNetCallback;
+import com.example.admin.myhttplib.callback.SimpleNetCallback;
+import com.example.admin.myhttplib.response.ListResponse;
+import com.example.admin.myhttplib.response.Response;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -16,13 +16,13 @@ import java.util.Map;
  *
  * Created by liulei on 2017/3/24.
  */
-class LLHttpManager<T> {
+class HttpManager<T> {
 
-    private static LLHttpManager ins;
+    private static HttpManager ins;
 
-    public static LLHttpManager getInstance() {
+    public static HttpManager getInstance() {
         if(ins == null){
-            ins = new LLHttpManager();
+            ins = new HttpManager();
         }
         return ins;
     }
@@ -33,11 +33,11 @@ class LLHttpManager<T> {
      * @param url
      * @param callback
      */
-     static void doNetGet(int tag,String url,final LLNetCallback callback){
-        LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.GET, tag, url,null, new LLNetCallback() {
+     static void doNetGet(int tag,String url,final SimpleNetCallback callback){
+        Executor.THREAD_POOL_EXECUTOR.execute(new NetRunnable(NetRunnable.RequestType.GET, tag, url,null, new SimpleNetCallback() {
             @Override
             public void onSuccess(final int tag, final String entity) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onSuccess(tag,entity);
@@ -47,7 +47,7 @@ class LLHttpManager<T> {
 
             @Override
             public void onFailure(final int tag, final String msg, final int code) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onFailure(tag,msg,code);
@@ -64,19 +64,19 @@ class LLHttpManager<T> {
      * @param params
      * @param callback
      */
-    void doBeanNetPost(int tag, String url, Map<String,String> params, final LLBeanNetCallback<T> callback){
-        LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.POST, tag, url,params, new LLNetCallback() {
+    void doBeanNetPost(int tag, String url, Map<String,String> params, final BeanNetCallback<T> callback){
+        Executor.THREAD_POOL_EXECUTOR.execute(new NetRunnable(NetRunnable.RequestType.POST, tag, url,params, new SimpleNetCallback() {
             @Override
             public void onSuccess(final int tag, final String entity) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         //解析
-                        LLResponse parsed = JSON.parseObject(entity,LLResponse.class);
+                        Response parsed = JSON.parseObject(entity,Response.class);
                         JSONObject dataObject = JSON.parseObject(entity);
-                        parsed.setData(dataObject.getString(LLResponse.DATA));
-                        parsed.setStatus(dataObject.getInteger(LLResponse.STATUS));
-                        parsed.setMsg(dataObject.getString(LLResponse.MSG));
+                        parsed.setData(dataObject.getString(Response.DATA));
+                        parsed.setStatus(dataObject.getInteger(Response.STATUS));
+                        parsed.setMsg(dataObject.getString(Response.MSG));
                         if (callback.getType() instanceof Class) {
                             parsed.parseVo((Class<T>) callback.getType());
                         } else if (callback.getType() instanceof ParameterizedType) {
@@ -85,7 +85,6 @@ class LLHttpManager<T> {
                                 parsed.parseVo((Class<T>) types[0]);
                             }
                         }
-//                        T data = (T) jsonObject.getString(LLResponse.DATA);
                         callback.onSuccess(tag, parsed);
                     }
                 });
@@ -93,7 +92,7 @@ class LLHttpManager<T> {
 
             @Override
             public void onFailure(final int tag, final String msg, final int code) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onFailure(tag,msg,code);
@@ -110,18 +109,18 @@ class LLHttpManager<T> {
      * @param params
      * @param callback
      */
-    void doListNetPost(int tag, String url, Map<String,String> params, final LLListNetCallback<T> callback){
-        LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.POST, tag, url,params, new LLNetCallback() {
+    void doListNetPost(int tag, String url, Map<String,String> params, final ListNetCallback<T> callback){
+        Executor.THREAD_POOL_EXECUTOR.execute(new NetRunnable(NetRunnable.RequestType.POST, tag, url,params, new SimpleNetCallback() {
             @Override
             public void onSuccess(final int tag, final String entity) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        LLListResponse parsedList = JSON.parseObject(entity,LLListResponse.class);
+                        ListResponse parsedList = JSON.parseObject(entity,ListResponse.class);
                         JSONObject dataObject = JSON.parseObject(entity);
-                        parsedList.setData(dataObject.getString(LLResponse.DATA));
-                        parsedList.setStatus(dataObject.getInteger(LLResponse.STATUS));
-                        parsedList.setMsg(dataObject.getString(LLResponse.MSG));
+                        parsedList.setData(dataObject.getString(Response.DATA));
+                        parsedList.setStatus(dataObject.getInteger(Response.STATUS));
+                        parsedList.setMsg(dataObject.getString(Response.MSG));
                         if (callback.getType() instanceof Class) {
                             parsedList.parseList((Class<T>) callback.getType());
                         } else if (callback.getType() instanceof ParameterizedType) {
@@ -130,7 +129,6 @@ class LLHttpManager<T> {
                                 parsedList.parseList((Class<T>) types[0]);
                             }
                         }
-//                        T data = (T) jsonObject.getString(LLResponse.DATA);
                         callback.onSuccess(tag, parsedList);
                     }
                 });
@@ -138,7 +136,7 @@ class LLHttpManager<T> {
 
             @Override
             public void onFailure(final int tag, final String msg, final int code) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onFailure(tag,msg,code);
@@ -156,11 +154,11 @@ class LLHttpManager<T> {
      * @param params
      * @param callback
      */
-    void doSimpleNetPost(int tag, String url, Map<String,String> params, final LLNetCallback callback){
-        LLExecutor.THREAD_POOL_EXECUTOR.execute(new LLNetRunnable(LLNetRunnable.RequestType.POST, tag, url,params, new LLNetCallback() {
+    void doSimpleNetPost(int tag, String url, Map<String,String> params, final SimpleNetCallback callback){
+        Executor.THREAD_POOL_EXECUTOR.execute(new NetRunnable(NetRunnable.RequestType.POST, tag, url,params, new SimpleNetCallback() {
             @Override
             public void onSuccess(final int tag, final String entity) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onSuccess(tag,entity);
@@ -170,7 +168,7 @@ class LLHttpManager<T> {
 
             @Override
             public void onFailure(final int tag, final String msg, final int code) {
-                LLExecutor.getNetHandler().post(new Runnable() {
+                Executor.getNetHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onFailure(tag,msg,code);
@@ -181,6 +179,6 @@ class LLHttpManager<T> {
     }
 
     static void cancelHttp(int tag){
-        LLNetRunnable.cancelHttp(tag);
+//        LLNetRunnable.cancelHttp(tag);
     }
 }

@@ -1,9 +1,10 @@
-package com.example.admin.myhttplib;
+package com.example.admin.myhttplib.impl;
 
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.example.admin.myhttplib.callback.LLNetCallback;
+import com.example.admin.myhttplib.Executor;
+import com.example.admin.myhttplib.callback.SimpleNetCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,47 +19,23 @@ import java.util.Map;
 
 /**
  *
- * Created by liulei on 2017/3/23.
+ * Created by LiuLei on 2017/9/1.
  */
 
-public class LLNetRunnable implements Runnable {
+public class RequestImpl implements RequestTypeLisenter {
 
     private final static int TimeOutMillis = 5 * 1000;
-    private RequestType method = RequestType.POST;
-    private LLNetCallback meNetCallback;
-    private String mUrl;
-    private int mTag;
-    private static SparseArray<HttpURLConnection>connections = new SparseArray<>();
-    private Map<String,String>mParams;
+    private static SparseArray<HttpURLConnection> connections = new SparseArray<>();
 
-    public enum RequestType {
-        GET,
-        POST
-    }
+    private static RequestImpl instance = new RequestImpl();
 
-    public LLNetRunnable(RequestType method, int tag, String url, Map<String,String>params, LLNetCallback callback) {
-        this.method = method;
-        this.meNetCallback = callback;
-        mUrl = url;
-        mParams = params;
-        mTag = tag;
-    }
 
-    public LLNetRunnable(RequestType method, LLNetCallback callback) {
-        this.method = method;
-        this.meNetCallback = callback;
+    public static RequestImpl getInstance(){
+        return instance;
     }
 
     @Override
-    public void run() {
-        if (method.equals(RequestType.POST)) {
-            doPost(mTag,mUrl,mParams,meNetCallback);
-        } else if (method.equals(RequestType.GET)) {
-            doGet(mTag, mUrl, meNetCallback);
-        }
-    }
-
-    private void doGet(int tag, String url, LLNetCallback meNetCallback) {
+    public void doGet(int tag, String url, SimpleNetCallback meNetCallback) {
         HttpURLConnection httpURLConnection = null;
         try {
             URL mUrl = new URL(url);
@@ -111,7 +88,8 @@ public class LLNetRunnable implements Runnable {
         }
     }
 
-    private void doPost(int tag, String url, Map<String, String> params, LLNetCallback callback) {
+    @Override
+    public void doPost(int tag, String url, Map<String, String> params, SimpleNetCallback callback) {
         HttpURLConnection connection = null;
         byte[] data = getRequestData(params, "utf-8").toString().getBytes();
         try {
@@ -150,24 +128,19 @@ public class LLNetRunnable implements Runnable {
 
     }
 
-    /*
-    * Function  :   处理服务器的响应结果（将输入流转化成字符串）
-    * Param     :   inputStream服务器的响应输入流
-    */
-    private String dealResponseResult(InputStream inputStream) {
-        String result = null;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[]data = new byte[1024];
-        int len = 0;
-        try {
-            while ((len = inputStream.read(data))!=-1){
-                byteArrayOutputStream.write(data,0,len);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    public void cancelRequest(final int tag) {
+        final HttpURLConnection con = connections.get(tag);
+        if(con!=null){
+            Executor.THREAD_POOL_EXECUTOR.execute(new Runnable() {
+                @Override
+                public void run() {
+                    con.disconnect();
+                    connections.remove(tag);
+                    Log.e("LLNetRunnable","取消请求成功");
+                }
+            });
         }
-        result = new String(byteArrayOutputStream.toByteArray());
-        return result;
     }
 
     /**
@@ -196,17 +169,24 @@ public class LLNetRunnable implements Runnable {
         }
     }
 
-    public static void cancelHttp(final int tag){
-        final HttpURLConnection con = connections.get(tag);
-        if(con!=null){
-            LLExecutor.THREAD_POOL_EXECUTOR.execute(new Runnable() {
-                @Override
-                public void run() {
-                    con.disconnect();
-                    connections.remove(tag);
-                    Log.e("LLNetRunnable","取消请求成功");
-                }
-            });
+    /*
+    * Function  :   处理服务器的响应结果（将输入流转化成字符串）
+    * Param     :   inputStream服务器的响应输入流
+    */
+    private String dealResponseResult(InputStream inputStream) {
+        String result = null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[]data = new byte[1024];
+        int len = 0;
+        try {
+            while ((len = inputStream.read(data))!=-1){
+                byteArrayOutputStream.write(data,0,len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        result = new String(byteArrayOutputStream.toByteArray());
+        return result;
     }
+
 }

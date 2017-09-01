@@ -12,7 +12,7 @@ import java.util.List;
  * Created by LiuLei on 2017/8/19.
  */
 
-public class LLListResponse<T> extends LLResponse {
+public class ListResponse<T> extends Response {
 
     private List<T> mList;
 

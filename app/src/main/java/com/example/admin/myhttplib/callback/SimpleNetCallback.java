@@ -5,7 +5,7 @@ package com.example.admin.myhttplib.callback;
  * Created by liulei on 2017/3/23.
  */
 
-public interface LLNetCallback {
+public interface SimpleNetCallback {
 
     void onSuccess(int tag,String entity);
 
